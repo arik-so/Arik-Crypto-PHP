@@ -8,7 +8,6 @@
 
 namespace Tests\ArikCrypto;
 
-
 use ArikCrypto\AES;
 
 class AESTest extends \PHPUnit_Framework_TestCase {

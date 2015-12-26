@@ -5,5 +5,5 @@ php:
 install:
     - composer install
     - php vendor/autoload.php
-script: phpunit tests/ --bootstrap vendor/autoload.php
+script: phpunit --bootstrap vendor/autoload.php tests/
 
