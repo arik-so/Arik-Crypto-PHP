@@ -6,4 +6,5 @@ php:
     - 'hhvm'
 install: composer install
 script: phpunit --bootstrap vendor/autoload.php tests/
-
+notifications:
+    email: never
