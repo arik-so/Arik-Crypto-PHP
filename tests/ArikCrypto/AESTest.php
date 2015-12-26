@@ -16,14 +16,12 @@ class AESTest extends \PHPUnit_Framework_TestCase {
 		$key = AES::generateKey();
 		$rawKey = base64_decode($key);
 		$this->assertEquals(32, strlen($rawKey));
-		echo $key;
 	}
 
 	public function testInitializationVectorGeneration() {
 		$key = AES::generateInitializationVector();
 		$rawKey = base64_decode($key);
 		$this->assertEquals(16, strlen($rawKey));
-		echo $key;
 	}
 
 	public function testEncryption(){
