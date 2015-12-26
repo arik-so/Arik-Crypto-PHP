@@ -14,7 +14,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"ArikCrypto\\": "src/ArikCrypto"
+			"ArikCrypto\\": "src/"
 		}
 	}
 }
