@@ -6,16 +6,21 @@
  * Date: 12/25/15
  * Time: 2:59 PM
  */
-class RSATest extends PHPUnit_Framework_TestCase {
+
+namespace Tests\ArikCrypto;
+
+use ArikCrypto\RSA;
+
+class RSATest extends \PHPUnit_Framework_TestCase {
 
 	public function testKeyPairGeneration() {
-		$keyPair = \ArikCrypto\RSA::generateKeyPair();
+		$keyPair = RSA::generateKeyPair();
 		$this->assertNotEmpty($keyPair->getPrivateKey());
 		$this->assertNotEmpty($keyPair->getPublicKey());
 	}
 
 	public function testEncryption() {
-		$keyPair = \ArikCrypto\RSA::generateKeyPair();
+		$keyPair = RSA::generateKeyPair();
 		$original = 'Hello World';
 		$encrypted = $keyPair->encrypt($original);
 		$decrypted = $keyPair->decrypt($encrypted);
@@ -23,7 +28,7 @@ class RSATest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testSigning() {
-		$keyPair = \ArikCrypto\RSA::generateKeyPair();
+		$keyPair = RSA::generateKeyPair();
 		$original = 'Hello World';
 		$hashedSignature = $keyPair->sign($original, true);
 		$unhashedSignature = $keyPair->sign($original, false);
