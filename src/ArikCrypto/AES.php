@@ -47,7 +47,7 @@ class AES {
 
 	public static function encrypt($input, $key, $iv) {
 
-		$size = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128);
+		$size = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
 		$input = AES::pkcs5_pad($input, $size);
 		$td = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
 		mcrypt_generic_init($td, $key, $iv);
