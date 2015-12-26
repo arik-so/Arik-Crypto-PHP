@@ -1,4 +1,4 @@
 # Arik-Crypto-PHP
 An RSA and AES library for PHP
 
-This is where the Travis button will be.
+[![Build Status](https://travis-ci.org/arik-so/Arik-Crypto-PHP.svg?branch=master)](https://travis-ci.org/arik-so/Arik-Crypto-PHP)
