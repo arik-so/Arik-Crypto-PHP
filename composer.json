@@ -1,6 +1,6 @@
 {
 	"name": "arik/arik-crypto",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "An RSA and AES library for PHP",
 	"license": "MIT",
 	"authors": [
