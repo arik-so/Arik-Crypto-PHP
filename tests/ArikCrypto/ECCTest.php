@@ -24,10 +24,6 @@ class ECCTest extends \PHPUnit_Framework_TestCase {
 
 		$pub1 = $ecdsa1->getPubKeyPoints();
 		$priv1 = $ecdsa1->getPrivateKey();
-		$priv1B = $ecdsa1->getWif();
-
-		var_dump($priv1);
-		var_dump($priv1B);
 
 		$pub2 = $ecdsa2->getPubKeyPoints();
 		$priv2 = $ecdsa2->getPrivateKey();
@@ -62,6 +58,13 @@ class ECCTest extends \PHPUnit_Framework_TestCase {
 	public function testSigning() {
 
 		$keyPair = ECC::generateKeyPair();
+		$privateKey = $keyPair->getPrivateKey();
+		$publicKey = $keyPair->getPublicKey();
+
+		// the lengths are important
+		$this->assertEquals(66, strlen($publicKey));
+		$this->assertEquals(64, strlen($privateKey));
+
 		$original = 'Hello World!';
 
 		$signature = $keyPair->sign($original);
@@ -87,6 +90,13 @@ class ECCTest extends \PHPUnit_Framework_TestCase {
 		$decrypted = AES::decryptBase64($encrypted, $myKey, $iv);
 		$this->assertEquals($original, $decrypted, 'encryption works');
 
+	}
+
+	public function testCrossPlatformDiffieHellman() {
+		$privateKey = '686308ed8b6626c6e83b34d7fbfb44e0d46a9a876b6e37711cddb6474ee839e1';
+		$publicKey = '03d1dee0824bc8de9bc4320268c308ae0f25e85ab8a8be83be01b43992eafcbc3c';
+		$diffieHellman = ECC::diffieHellman($publicKey, $privateKey);
+		$this->assertEquals('027ac2a4bdac427eeab40fcd2ae0e3eee8fd48124b5524c9a8793614bb869c14d7', $diffieHellman);
 	}
 
 	private function diffieHellman($publicKeyPoints, $privateKey) {

@@ -55,19 +55,7 @@ class ECC {
 			'y' => gmp_strval($product['y'], 16)
 		];
 		$symmetricKey = $ecdsa->getDerPubKeyWithPubKeyPoints($secretPoints);
-		$aesCompatibleKey = self::exportKeyForAES($symmetricKey);
-		return $aesCompatibleKey;
-	}
-
-	public static function exportKeyForAES($symmetricKey) {
-		// the key is hexadecimal
-		// the data must be 32 characters long
-		// $trimmedData = substr($symmetricKey, 0, 64);
-		// $rawData = hex2bin($trimmedData);
-
-		$rawData = hash('sha256', $symmetricKey, true);
-		$aesKey = base64_encode($rawData);
-		return $aesKey;
+		return $symmetricKey;
 	}
 
 }
@@ -94,11 +82,15 @@ class ECCKeyPair {
 
 	public function getPublicKey() { return $this->_publicKey; }
 
-	public function calculateSymmetricKey($publicKey = null) {
+	public function calculateSymmetricKey($publicKey = null, $deriveKey = true) {
 		if ($publicKey == null) {
 			$publicKey = $this->getPublicKey();
 		}
-		return ECC::diffieHellman($publicKey, $this->getPrivateKey());
+		$diffieHellman = ECC::diffieHellman($publicKey, $this->getPrivateKey());
+		if ($deriveKey) {
+			return AES::deriveKey($diffieHellman);
+		}
+		return $diffieHellman;
 	}
 
 }

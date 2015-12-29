@@ -59,6 +59,12 @@ class AES {
 
 	}
 
+	public static function deriveKey($input) {
+		$rawData = hash('sha256', $input, true);
+		$aesKey = base64_encode($rawData);
+		return $aesKey;
+	}
+
 	private static function pkcs5_pad($text, $blocksize) {
 		$pad = $blocksize - (strlen($text) % $blocksize);
 		return $text . str_repeat(chr($pad), $pad);
