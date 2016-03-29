@@ -11,6 +11,9 @@ namespace ArikCrypto;
 
 class RSA {
 
+	const KEY_MODE_PRIVATE = 'private';
+	const KEY_MODE_PUBLIC = 'public';
+	
 	public static function generateKeyPair($bitSize = 2048) {
 
 		$strangeKeyPair = openssl_pkey_new(array('private_key_bits' => $bitSize));
@@ -33,7 +36,8 @@ class RSA {
 
 	private static function encryptWithPublic($data, $publicKey) {
 
-		openssl_public_encrypt($data, $encryptedString, $publicKey);
+		$normalizedKey = self::normalizeKey($publicKey, self::KEY_MODE_PUBLIC);
+		openssl_public_encrypt($data, $encryptedString, $normalizedKey);
 
 		return $encryptedString;
 
@@ -46,7 +50,8 @@ class RSA {
 
 	private static function encryptWithPrivate($data, $privateKey) {
 
-		openssl_private_encrypt($data, $decryptedString, $privateKey);
+		$normalizedKey = self::normalizeKey($privateKey, self::KEY_MODE_PRIVATE);
+		openssl_private_encrypt($data, $decryptedString, $normalizedKey);
 
 		return $decryptedString;
 
@@ -59,7 +64,8 @@ class RSA {
 
 	private static function decryptWithPublic($data, $publicKey) {
 
-		openssl_public_decrypt($data, $encryptedString, $publicKey);
+		$normalizedKey = self::normalizeKey($publicKey, self::KEY_MODE_PUBLIC);
+		openssl_public_decrypt($data, $encryptedString, $normalizedKey);
 
 		return $encryptedString;
 
@@ -72,10 +78,27 @@ class RSA {
 
 	private static function decryptWithPrivate($data, $privateKey) {
 
-		openssl_private_decrypt($data, $decryptedString, $privateKey);
+		$normalizedKey = self::normalizeKey($privateKey, self::KEY_MODE_PRIVATE);
+		openssl_private_decrypt($data, $decryptedString, $normalizedKey);
 
 		return $decryptedString;
 
+	}
+
+	private static function normalizeKey($unfilteredKey, $mode = null) {
+		// remove decorators
+		$undecoratedKey = preg_replace('/-----[A-Za-z ]*-----/', null, $unfilteredKey);
+		// remove new lines
+		$nonWrappedKey = str_replace("\n", null, $undecoratedKey);
+		$rewrappedKey = implode("\n", str_split($nonWrappedKey, 64));
+
+		if ($mode === self::KEY_MODE_PRIVATE) {
+			return "-----BEGIN PRIVATE KEY-----\n" . $rewrappedKey . "\n-----END PRIVATE KEY-----\n";
+		} else if ($mode === self::KEY_MODE_PUBLIC) {
+			return "-----BEGIN PUBLIC KEY-----\n" . $rewrappedKey . "\n-----END PUBLIC KEY-----\n";
+		}
+
+		return $rewrappedKey;
 	}
 
 }
