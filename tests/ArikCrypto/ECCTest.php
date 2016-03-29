@@ -86,8 +86,8 @@ class ECCTest extends \PHPUnit_Framework_TestCase {
 		$iv = AES::generateInitializationVector();
 		$original = 'Hello World!';
 
-		$encrypted = AES::encryptAndBase64($original, $myKey, $iv);
-		$decrypted = AES::decryptBase64($encrypted, $myKey, $iv);
+		$encrypted = AES::encrypt($original, $myKey, $iv);
+		$decrypted = AES::decrypt($encrypted, $myKey, $iv);
 		$this->assertEquals($original, $decrypted, 'encryption works');
 
 	}
