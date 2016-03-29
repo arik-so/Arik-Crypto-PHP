@@ -29,57 +29,37 @@ class RSA {
 
 	}
 
-	public static function encryptAndBase64WithPublic($data, $publicKey) {
-
-		return base64_encode(self::encryptWithPublic($data, $publicKey));
-	}
-
-	private static function encryptWithPublic($data, $publicKey) {
+	public static function encryptWithPublic($data, $publicKey) {
 
 		$normalizedKey = self::normalizeKey($publicKey, self::KEY_MODE_PUBLIC);
 		openssl_public_encrypt($data, $encryptedString, $normalizedKey);
 
-		return $encryptedString;
+		return base64_encode($encryptedString);
 
 	}
 
-	public static function encryptAndBase64WithPrivate($data, $privateKey) {
-
-		return base64_encode(self::encryptWithPrivate($data, $privateKey));
-	}
-
-	private static function encryptWithPrivate($data, $privateKey) {
+	public static function encryptWithPrivate($data, $privateKey) {
 
 		$normalizedKey = self::normalizeKey($privateKey, self::KEY_MODE_PRIVATE);
-		openssl_private_encrypt($data, $decryptedString, $normalizedKey);
+		openssl_private_encrypt($data, $signedString, $normalizedKey);
+
+		return base64_encode($signedString);
+
+	}
+
+	public static function decryptWithPublic($data, $publicKey) {
+
+		$normalizedKey = self::normalizeKey($publicKey, self::KEY_MODE_PUBLIC);
+		openssl_public_decrypt(base64_decode($data), $decryptedString, $normalizedKey);
 
 		return $decryptedString;
 
 	}
 
-	public static function decryptBase64WithPublic($data, $publicKey) {
-
-		return self::decryptWithPublic(base64_decode($data), $publicKey);
-	}
-
-	private static function decryptWithPublic($data, $publicKey) {
-
-		$normalizedKey = self::normalizeKey($publicKey, self::KEY_MODE_PUBLIC);
-		openssl_public_decrypt($data, $encryptedString, $normalizedKey);
-
-		return $encryptedString;
-
-	}
-
-	public static function decryptBase64WithPrivate($data, $privateKey) {
-
-		return self::decryptWithPrivate(base64_decode($data), $privateKey);
-	}
-
-	private static function decryptWithPrivate($data, $privateKey) {
+	public static function decryptWithPrivate($data, $privateKey) {
 
 		$normalizedKey = self::normalizeKey($privateKey, self::KEY_MODE_PRIVATE);
-		openssl_private_decrypt($data, $decryptedString, $normalizedKey);
+		openssl_private_decrypt(base64_decode($data), $decryptedString, $normalizedKey);
 
 		return $decryptedString;
 
@@ -122,25 +102,25 @@ class RSAKeyPair {
 	public function getPrivateKey() { return $this->_privateKey; }
 
 	public function encrypt($data) {
-		return RSA::encryptAndBase64WithPublic($data, $this->getPublicKey());
+		return RSA::encryptWithPublic($data, $this->getPublicKey());
 	}
 
 	public function decrypt($data) {
-		return RSA::decryptBase64WithPrivate($data, $this->getPrivateKey());
+		return RSA::decryptWithPrivate($data, $this->getPrivateKey());
 	}
 
 	public function sign($data, $hash = false){
 		if ($hash) {
 			$data = hash(self::SIGNATURE_HASH_ALGORITHM, $data);
 		}
-		return RSA::encryptAndBase64WithPrivate($data, $this->getPrivateKey());
+		return RSA::encryptWithPrivate($data, $this->getPrivateKey());
 	}
 
 	public function verify($signature, $original, $hash = false){
 		if ($hash){
 			$original = hash(self::SIGNATURE_HASH_ALGORITHM, $original);
 		}
-		$reconstructed = RSA::decryptBase64WithPublic($signature, $this->getPublicKey());
+		$reconstructed = RSA::decryptWithPublic($signature, $this->getPublicKey());
 		return $reconstructed === $original;
 	}
 
