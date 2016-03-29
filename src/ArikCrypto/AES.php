@@ -23,17 +23,13 @@ class AES {
 
 	}
 
-	public static function decryptBase64($input, $key, $iv) {
-		return self::decrypt(base64_decode($input), base64_decode($key), base64_decode($iv));
-	}
-
 	public static function decrypt($input, $key, $iv) {
 		$decrypted = mcrypt_decrypt(
 			MCRYPT_RIJNDAEL_128,
-			$key,
-			$input,
+			base64_decode($key),
+			base64_decode($input),
 			MCRYPT_MODE_CBC,
-			$iv
+			base64_decode($iv)
 		);
 		$dec_s = strlen($decrypted);
 		$padding = ord($decrypted[$dec_s - 1]);
@@ -41,21 +37,17 @@ class AES {
 		return $decrypted;
 	}
 
-	public static function encryptAndBase64($input, $key, $iv) {
-		return base64_encode(self::encrypt($input, base64_decode($key), base64_decode($iv)));
-	}
-
 	public static function encrypt($input, $key, $iv) {
 
 		$size = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
 		$input = AES::pkcs5_pad($input, $size);
 		$td = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
-		mcrypt_generic_init($td, $key, $iv);
+		mcrypt_generic_init($td, base64_decode($key), base64_decode($iv));
 		$data = mcrypt_generic($td, $input);
 		mcrypt_generic_deinit($td);
 		mcrypt_module_close($td);
 
-		return $data;
+		return base64_encode($data);
 
 	}
 
